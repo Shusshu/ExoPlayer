@@ -46,7 +46,6 @@ public final class SingleSampleSource implements SampleSource, SampleSourceReade
   private final Uri uri;
   private final DataSource dataSource;
   private final MediaFormat format;
-  private final TrackInfo trackInfo;
   private final int minLoadableRetryCount;
 
   private byte[] sampleData;
@@ -69,7 +68,6 @@ public final class SingleSampleSource implements SampleSource, SampleSourceReade
     this.dataSource = dataSource;
     this.format = format;
     this.minLoadableRetryCount = minLoadableRetryCount;
-    trackInfo = new TrackInfo(format.mimeType, format.durationUs);
     sampleData = new byte[INITIAL_SAMPLE_SIZE];
   }
 
@@ -92,8 +90,8 @@ public final class SingleSampleSource implements SampleSource, SampleSourceReade
   }
 
   @Override
-  public TrackInfo getTrackInfo(int track) {
-    return trackInfo;
+  public MediaFormat getFormat(int track) {
+    return format;
   }
 
   @Override

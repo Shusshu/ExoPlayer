@@ -161,7 +161,7 @@ public final class TextTrackRenderer extends TrackRenderer implements Callback {
     int trackCount = source.getTrackCount();
     for (int i = 0; i < subtitleParsers.length; i++) {
       for (int j = 0; j < trackCount; j++) {
-        if (subtitleParsers[i].canParse(source.getTrackInfo(j).mimeType)) {
+        if (subtitleParsers[i].canParse(source.getFormat(j).mimeType)) {
           parserIndex = i;
           trackIndex = j;
           return TrackRenderer.STATE_PREPARED;
@@ -277,7 +277,7 @@ public final class TextTrackRenderer extends TrackRenderer implements Callback {
 
   @Override
   protected long getDurationUs() {
-    return source.getTrackInfo(trackIndex).durationUs;
+    return source.getFormat(trackIndex).durationUs;
   }
 
   @Override

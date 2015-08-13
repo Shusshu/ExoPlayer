@@ -99,7 +99,7 @@ public final class Eia608TrackRenderer extends TrackRenderer implements Callback
     }
     int trackCount = source.getTrackCount();
     for (int i = 0; i < trackCount; i++) {
-      if (eia608Parser.canParse(source.getTrackInfo(i).mimeType)) {
+      if (eia608Parser.canParse(source.getFormat(i).mimeType)) {
         trackIndex = i;
         return TrackRenderer.STATE_PREPARED;
       }
@@ -177,7 +177,7 @@ public final class Eia608TrackRenderer extends TrackRenderer implements Callback
 
   @Override
   protected long getDurationUs() {
-    return source.getTrackInfo(trackIndex).durationUs;
+    return source.getFormat(trackIndex).durationUs;
   }
 
   @Override

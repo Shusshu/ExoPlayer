@@ -93,7 +93,8 @@ public interface SampleSource {
      *
      * @return Information about the specified track.
      */
-    public TrackInfo getTrackInfo(int track);
+    //public TrackInfo getTrackInfo(int track);
+    public MediaFormat getFormat(int track);
 
     /**
      * Enable the specified track. This allows the track's format and samples to be read from

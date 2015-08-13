@@ -36,7 +36,6 @@ public final class SingleSampleChunkSource implements ChunkSource {
   private final Format format;
   private final long durationUs;
   private final MediaFormat mediaFormat;
-  private final TrackInfo trackInfo;
 
   /**
    * @param dataSource A {@link DataSource} suitable for loading the sample data.
@@ -54,17 +53,16 @@ public final class SingleSampleChunkSource implements ChunkSource {
     this.format = format;
     this.durationUs = durationUs;
     this.mediaFormat = mediaFormat;
-    trackInfo = new TrackInfo(format.mimeType, durationUs);
   }
 
   @Override
-  public TrackInfo getTrackInfo() {
-    return trackInfo;
+  public MediaFormat getFormat() {
+    return mediaFormat;
   }
 
   @Override
-  public void getMaxVideoDimensions(MediaFormat out) {
-    // Do nothing.
+  public MediaFormat getWithMaxVideoDimensions(MediaFormat format) {
+    return format;
   }
 
   @Override

@@ -38,17 +38,20 @@ public interface ChunkSource {
    *
    * @return Information about the track.
    */
-  TrackInfo getTrackInfo();
+  MediaFormat getFormat();
 
   /**
-   * Adaptive video {@link ChunkSource} implementations must set the maximum video dimensions on
-   * the supplied {@link MediaFormat}. Other implementations do nothing.
+   * Adaptive video {@link ChunkSource} implementations must return a copy of the provided
+   * {@link MediaFormat} with the maximum video dimensions set. Other implementations can return
+   * the provided {@link MediaFormat} directly.
    * <p>
-   * Only called when the source is enabled.
+   * This method should only be called when the source is enabled.
    *
-   * @param out The {@link MediaFormat} on which the maximum video dimensions should be set.
+   * @param format The format to be copied or returned.
+   * @return A copy of the provided {@link MediaFormat} with the maximum video dimensions set, or
+   *     the provided format.
    */
-  void getMaxVideoDimensions(MediaFormat out);
+  MediaFormat getWithMaxVideoDimensions(MediaFormat format);
 
   /**
    * Called when the source is enabled.

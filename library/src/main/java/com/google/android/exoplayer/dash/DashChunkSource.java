@@ -99,7 +99,7 @@ public class DashChunkSource implements ChunkSource {
   private final Handler eventHandler;
   private final EventListener eventListener;
 
-  private final TrackInfo trackInfo;
+  private final MediaFormat mediaFormat;
   private final DataSource dataSource;
   private final FormatEvaluator formatEvaluator;
   private final Evaluation evaluation;
@@ -266,7 +266,7 @@ public class DashChunkSource implements ChunkSource {
         adaptationSetIndex, representationIndices);
     long periodDurationUs = (representations[0].periodDurationMs == TrackRenderer.UNKNOWN_TIME_US)
         ? TrackRenderer.UNKNOWN_TIME_US : representations[0].periodDurationMs * 1000;
-    this.trackInfo = new TrackInfo(representations[0].format.mimeType, periodDurationUs);
+    this.mediaFormat = MediaFormat.createFormatForMimeType(getMediaMimeType(representations[0]), periodDurationUs);
 
     this.formats = new Format[representations.length];
     this.representationHolders = new HashMap<>();
@@ -286,16 +286,32 @@ public class DashChunkSource implements ChunkSource {
     Arrays.sort(formats, new DecreasingBandwidthComparator());
   }
 
-  @Override
-  public final void getMaxVideoDimensions(MediaFormat out) {
-    if (trackInfo.mimeType.startsWith("video")) {
-      out.setMaxVideoDimensions(maxWidth, maxHeight);
+  private static String getMediaMimeType(Representation representation) {
+    String mimeType = representation.format.mimeType;
+    if (MimeTypes.APPLICATION_MP4.equals(representation.format.mimeType)
+            && "stpp".equals(representation.format.codecs)) {
+      return MimeTypes.APPLICATION_TTML;
     }
+    // TODO: Use codecs to determine media mime type for other formats too.
+    return mimeType;
+  }
+
+//  @Override
+//  public final void getMaxVideoDimensions(MediaFormat out) {
+//    if (mediaFormat.mimeType.startsWith("video")) {
+//      out.setMaxVideoDimensions(maxWidth, maxHeight);
+//    }
+//  }
+
+  @Override
+  public final MediaFormat getWithMaxVideoDimensions(MediaFormat format) {
+    return MimeTypes.isVideo(mediaFormat.mimeType)
+            ? format.copyWithMaxVideoDimensions(maxWidth, maxHeight) : format;
   }
 
   @Override
-  public final TrackInfo getTrackInfo() {
-    return trackInfo;
+  public final MediaFormat getFormat() {
+    return mediaFormat;
   }
 
   // VisibleForTesting
@@ -656,7 +672,7 @@ public class DashChunkSource implements ChunkSource {
       }
       return new SingleSampleMediaChunk(dataSource, dataSpec, Chunk.TRIGGER_INITIAL,
           representation.format, startTimeUs, endTimeUs, absoluteSegmentNum, isLastSegment,
-          MediaFormat.createTextFormat(MimeTypes.TEXT_VTT), null, representationHolder.vttHeader);
+          MediaFormat.createTextFormat(MimeTypes.TEXT_VTT, representation.format.language), null, representationHolder.vttHeader);
     } else {
       return new ContainerMediaChunk(dataSource, dataSpec, trigger, representation.format,
           startTimeUs, endTimeUs, absoluteSegmentNum, isLastSegment, sampleOffsetUs,

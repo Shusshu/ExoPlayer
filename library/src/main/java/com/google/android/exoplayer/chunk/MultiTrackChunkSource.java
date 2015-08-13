@@ -61,8 +61,8 @@ public final class MultiTrackChunkSource implements ChunkSource, ExoPlayerCompon
   }
 
   @Override
-  public TrackInfo getTrackInfo() {
-    return selectedSource.getTrackInfo();
+  public MediaFormat getFormat() {
+    return selectedSource.getFormat();
   }
 
   @Override
@@ -94,8 +94,8 @@ public final class MultiTrackChunkSource implements ChunkSource, ExoPlayerCompon
   }
 
   @Override
-  public void getMaxVideoDimensions(MediaFormat out) {
-    selectedSource.getMaxVideoDimensions(out);
+  public MediaFormat getWithMaxVideoDimensions(MediaFormat format) {
+    return selectedSource.getWithMaxVideoDimensions(format);
   }
 
   @Override

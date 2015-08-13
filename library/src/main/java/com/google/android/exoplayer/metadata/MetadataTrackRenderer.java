@@ -97,7 +97,7 @@ public final class MetadataTrackRenderer<T> extends TrackRenderer implements Cal
     }
     int trackCount = source.getTrackCount();
     for (int i = 0; i < trackCount; i++) {
-      if (metadataParser.canParse(source.getTrackInfo(i).mimeType)) {
+      if (metadataParser.canParse(source.getFormat(i).mimeType)) {
         trackIndex = i;
         return TrackRenderer.STATE_PREPARED;
       }
@@ -165,7 +165,7 @@ public final class MetadataTrackRenderer<T> extends TrackRenderer implements Cal
 
   @Override
   protected long getDurationUs() {
-    return source.getTrackInfo(trackIndex).durationUs;
+    return source.getFormat(trackIndex).durationUs;
   }
 
   @Override

@@ -255,7 +255,7 @@ public abstract class MediaCodecTrackRenderer extends TrackRenderer {
       // TODO: Right now this is getting the mime types of the container format
       // (e.g. audio/mp4 and video/mp4 for fragmented mp4). It needs to be getting the mime types
       // of the actual samples (e.g. audio/mp4a-latm and video/avc).
-      if (handlesMimeType(source.getTrackInfo(i).mimeType)) {
+      if (handlesMimeType(source.getFormat(i).mimeType)) {
         trackIndex = i;
         return TrackRenderer.STATE_PREPARED;
       }
@@ -452,7 +452,7 @@ public abstract class MediaCodecTrackRenderer extends TrackRenderer {
 
   @Override
   protected long getDurationUs() {
-    return source.getTrackInfo(trackIndex).durationUs;
+    return source.getFormat(trackIndex).durationUs;
   }
 
   @Override

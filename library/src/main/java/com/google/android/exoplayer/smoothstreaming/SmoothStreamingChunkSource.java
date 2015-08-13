@@ -59,7 +59,7 @@ public class SmoothStreamingChunkSource implements ChunkSource {
   private static final int MINIMUM_MANIFEST_REFRESH_PERIOD_MS = 5000;
   private static final int INITIALIZATION_VECTOR_SIZE = 8;
 
-  private final TrackInfo trackInfo;
+  private final MediaFormat mediaFormat;
   private final DataSource dataSource;
   private final FormatEvaluator formatEvaluator;
   private final Evaluation evaluation;
@@ -135,7 +135,9 @@ public class SmoothStreamingChunkSource implements ChunkSource {
     this.liveEdgeLatencyUs = liveEdgeLatencyMs * 1000;
 
     StreamElement streamElement = getElement(initialManifest);
-    trackInfo = new TrackInfo(streamElement.tracks[0].format.mimeType, initialManifest.durationUs);
+    // TODO: Remove this and pass proper formats instead (b/22996976).
+    mediaFormat = MediaFormat.createFormatForMimeType(streamElement.tracks[0].format.mimeType,
+            initialManifest.durationUs);
     evaluation = new Evaluation();
 
     TrackEncryptionBox[] trackEncryptionBoxes = null;
@@ -180,15 +182,14 @@ public class SmoothStreamingChunkSource implements ChunkSource {
   }
 
   @Override
-  public final void getMaxVideoDimensions(MediaFormat out) {
-    if (trackInfo.mimeType.startsWith("video")) {
-      out.setMaxVideoDimensions(maxWidth, maxHeight);
-    }
+  public final MediaFormat getWithMaxVideoDimensions(MediaFormat format) {
+       return MimeTypes.isVideo(mediaFormat.mimeType)
+                 ? format.copyWithMaxVideoDimension(maxWidth, maxHeight) : format;
   }
 
   @Override
-  public final TrackInfo getTrackInfo() {
-    return trackInfo;
+  public final MediaFormat getFormat() {
+    return mediaFormat;
   }
 
   @Override
@@ -384,7 +385,6 @@ public class SmoothStreamingChunkSource implements ChunkSource {
     if (streamElement.type == StreamElement.TYPE_VIDEO) {
       MediaFormat format = MediaFormat.createVideoFormat(mimeType, MediaFormat.NO_VALUE,
           trackFormat.width, trackFormat.height, Arrays.asList(trackElement.csd));
-      format.setMaxVideoDimensions(streamElement.maxWidth, streamElement.maxHeight);
       return format;
     } else if (streamElement.type == StreamElement.TYPE_AUDIO) {
       List<byte[]> csd;
@@ -398,7 +398,7 @@ public class SmoothStreamingChunkSource implements ChunkSource {
           trackFormat.numChannels, trackFormat.audioSamplingRate, csd);
       return format;
     } else if (streamElement.type == StreamElement.TYPE_TEXT) {
-      return MediaFormat.createTextFormat(trackFormat.mimeType);
+      return MediaFormat.createTextFormat(trackFormat.mimeType, trackFormat.language);
     }
     return null;
   }
